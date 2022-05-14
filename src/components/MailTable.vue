@@ -2,6 +2,9 @@
   <h1>
     {{ emailSelection.emails.size }}
   </h1>
+  <BulkActionBar
+    :emails="unarchivedEmails"
+  />
   <transition name="switch" mode="out-in">
     <table v-if="unarchivedEmails.length" class="mail-table">
       <transition-group tag="tbody" name="list" appear data-cy="emails">
@@ -10,27 +13,29 @@
           :key="email.id"
           class="list-item"
           :class="['clickable', email.read ? 'read': '']"
-          @click="openEmail(email)"
         >
           <td>
             <input
               type="checkbox"
-              :selected="emailSelection.emails.has(email)"
+              :checked="emailSelection.emails.has(email)"
               @click.stop="emailSelection.toggle(email)"
             />
           </td>
-          <td>{{ email.from }}</td>
-          <td>
+          <td @click="openEmail(email)">{{ email.from }}</td>
+          <td @click="openEmail(email)">
             <p>
               <strong> {{ email.subject }} </strong> - {{ email }}
             </p>
           </td>
-          <td class="date">
+          <td class="date" @click="openEmail(email)">
             {{ dayjs(new Date(email.sentAt)).format('MMMM D, YYYY h:mm A') }}
           </td>
            <td>
             <button @click.stop="archivedEmail(email)">
               Archive
+            </button>
+            <button @click.stop="$router.push({ name: 'Detail', params: { id: email.id } })">
+              Detail
             </button>
           </td>
         </tr>
@@ -51,13 +56,14 @@ import dayjs from 'dayjs'
 import axios from 'axios'
 import MailView from '@/components/MailView.vue'
 import ModalView from '@/components/ModalView.vue'
+import BulkActionBar from '@/components/BulkActionBar.vue'
 import useEmailSelection from '@/composables/use-email-selection'
 
 export default {
   name: 'MailTable',
-  components: { MailView, ModalView },
+  components: { MailView, ModalView, BulkActionBar },
   async setup () {
-    const { data: em } = await axios.get('http://localhost:3000/emails')
+    const { data: em } = await axios.get('http://127.0.0.1:8000/emails')
     const emails = ref(em)
     const sortedEmails = computed(() => {
       const emailsValues = emails.value
@@ -84,7 +90,7 @@ export default {
       return sortedEmails.value.filter(e => !e.archived)
     })
     const updateEmail = (email) => {
-      axios.put(`http://localhost:3000/emails/${email.id}`, email)
+      axios.put(`http://localhost:8000/emails/${email.id}/`, email)
     }
     const changeEmail = ({ toggleRead, toggleArchive, save, closeModal, changeIndex }) => {
       const email = openedEmail.value

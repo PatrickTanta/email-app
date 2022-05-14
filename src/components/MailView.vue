@@ -11,7 +11,7 @@
     </h2>
     <div>
       <em>
-        From {{ email.from }} on {{ dayjs(new Date(email.sentAt)).format('MMMM D, YYYY h:mm A') }}
+        From {{ email.fromm }} on {{ dayjs(new Date(email.sentAt)).format('MMMM D, YYYY h:mm A') }}
       </em>
     </div>
     <div class="body" v-html="marked(email.body)" />

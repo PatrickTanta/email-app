@@ -1,26 +1,9 @@
 <template>
-  <h1>VMail Inbox</h1>
-  <Suspense>
-    <template #default>
-      <MailTable />
-    </template>
-    <template #fallback>
-      <div>
-        <Loader />
-      </div>
-    </template>
-  </Suspense>
+  <router-view />
 </template>
 <script>
-import MailTable from '@/components/MailTable'
-import Loader from '@/components/Loader'
-
 export default {
-  name: 'App',
-  components: {
-    MailTable,
-    Loader
-  }
+  name: 'App'
 }
 </script>
 
